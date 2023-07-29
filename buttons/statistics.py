@@ -23,15 +23,14 @@ async def statistics(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     await update.message.reply_html(
         rf"""
-Hej  {user.mention_html()}!
+Привет,  {user.mention_html()}!
 
-您当前Token使用情况如下：
-查询：{prompt_tokens["tokens"]} Tokens
-答案：{completion_tokens["tokens"]} Tokens
-总共：{prompt_tokens["tokens"] + completion_tokens["tokens"]} Tokens
+Вот сколько токенов ты потратил:
+На запрос：{prompt_tokens["tokens"]} токенов
+На ответ：{completion_tokens["tokens"]} токенов
+Итого：{prompt_tokens["tokens"] + completion_tokens["tokens"]} токенов
 
-祝您生活愉快！🎉
-        """,
+ """,
         reply_markup=reply_markup, disable_web_page_preview=True
     )
     return CHOOSING

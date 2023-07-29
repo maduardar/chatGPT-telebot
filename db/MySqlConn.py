@@ -1,60 +1,57 @@
 # -*- coding: UTF-8 -*-
 """
-1、执行带参数的ＳＱＬ时，请先用sql语句指定需要输入的条件列表，然后再用tuple/list进行条件批配
-２、在格式ＳＱＬ中不需要使用引号指定数据类型，系统会根据输入参数自动识别
-３、在输入的值中不需要使用转意函数，系统会自动处理
+1. When executing SQL with parameters, please use the SQL statement to specify the list of conditions that need to be input, and then use tuple/list for condition batching
+2. In the format SQL, there is no need to use quotation marks to specify the data type, the system will automatically identify it according to the input parameters
+3. There is no need to use the conversion function in the input value, the system will handle it automatically
 """
 
 import pymysql
-from dbutils.pooled_db import PooledDB
+from pymysqlpool.pooled_db import PooledDB
+# from dbutils.pooled_db import PooledDB
 from config import config
 
 
 class Mysql(object):
     """
-    MYSQL数据库对象，负责产生数据库连接 , 此类中的连接采用连接池实现获取连接对象：conn = Mysql.getConn()
-            释放连接对象;conn.close()或del conn
+     The MYSQL database object is responsible for generating database connections, and the connection in this class uses
+     the connection pool to obtain the connection object:
+     conn = Mysql.getConn()
+    Release the connection object; conn.close() or del conn
     """
     # 连接池对象
     __pool = None
 
     def __init__(self):
-        # 数据库构造函数，从连接池中取出连接，并生成操作游标
         self._conn = Mysql.__getConn()
-        self._cursor = self._conn.cursor()
+        self._cursor = self._conn.cursor(pymysql.cursors.DictCursor)
 
     @staticmethod
     def __getConn():
         """
-        @summary: 静态方法，从连接池中取出连接
+        @summary: Static method, take out the connection from the connection pool
         @return MySQLdb.connection
         """
         if Mysql.__pool is None:
-            __pool = PooledDB(creator=pymysql,  # 使用链接数据库的模块
-                              maxconnections=60,  # 连接池允许的最大连接数，0和None表示不限制连接数
-                              mincached=2,  # 初始化时，链接池中至少创建的空闲的链接，0表示不创建
-                              maxcached=5,  # 链接池中最多闲置的链接，0和None不限制
-                              maxshared=3,
-                              # 链接池中最多共享的链接数量，0和None表示全部共享。PS: 无用，因为pymysql和MySQLdb等模块的 threadsafety都为1，所有值无论设置为多少，_maxcached永远为0，所以永远是所有链接都共享。
-                              blocking=True,  # 连接池中如果没有可用连接后，是否阻塞等待。True，等待；False，不等待然后报错
-                              maxusage=None,  # 一个链接最多被重复使用的次数，None表示无限制
-                              setsession=["set global time_zone = '+8:00'", "set time_zone = '+8:00'"],  # 开始会话前执行的命令列表。
+            __pool = PooledDB(
+                              # creator=pymysql,
+                              max_connections=60,
+                              # set_session=["set global time_zone = '+8:00'", "set time_zone = '+8:00'"],  # 开始会话前执行的命令列表。
                               ping=0,  # ping MySQL服务端，检查是否服务可用。
                               host=config["MYSQL"]["DBHOST"],
                               port=config["MYSQL"]["DBPORT"],
                               user=config["MYSQL"]["DBUSER"],
                               password=config["MYSQL"]["DBPWD"],
                               database=config["MYSQL"]["DBNAME"],
-                              charset=config["MYSQL"]["DBCHAR"],
-                              cursorclass=pymysql.cursors.DictCursor)
+                              charset=config["MYSQL"]["DBCHAR"])
+
         return __pool.connection()
 
     def getAll(self, sql, param=None):
         """
-        @summary: 执行查询，并取出所有结果集
-        @param sql:查询ＳＱＬ，如果有查询条件，请只指定条件列表，并将条件值使用参数[param]传递进来
-        @param param: 可选参数，条件列表值（元组/列表）
-        @return: result list(字典对象)/boolean 查询到的结果集
+        @summary: Execute the query and fetch all result sets
+        @param sql: query SQL, if there is a query condition, please only specify the condition list, and pass the condition value using the parameter [param]
+        @param param: optional parameter, conditional list value (tuple/list)
+        @return: result list (dictionary object)/boolean query result set
         """
         if param is None:
             count = self._cursor.execute(sql)
@@ -81,6 +78,7 @@ class Mysql(object):
             result = self._cursor.fetchone()
         else:
             result = False
+
         return result
 
     def getMany(self, sql, num, param=None):
@@ -127,7 +125,8 @@ class Mysql(object):
         """
         self._cursor.execute("SELECT @@IDENTITY AS id")
         result = self._cursor.fetchall()
-        return result[0]['id']
+        print(result)
+        return result[0]["id"]
 
     def __query(self, sql, param=None):
         if param is None:

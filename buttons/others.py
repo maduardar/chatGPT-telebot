@@ -27,14 +27,16 @@ async def non_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     project_root = get_project_root()
     user = update.message.from_user
     if len(update.message.photo) != 0:
-        await update.message.reply_text(text='暂不开放图片发送功能！\n请使用文字进行提问！')
+        await update.message.reply_text(text='Функция отправки изображения пока недоступна! \n'
+                                             'Пожалуйста, используй текст, чтобы задавать вопросы!')
         photo_file = await update.message.photo[-1].get_file()
         # can't get photo's name
         await photo_file.download_to_drive(
             f'{project_root}/data/photos/{user.name}-{time.strftime("%Y%m%d-%H%M%S")}.jpg')
         logger.info("Photo of %s: %s", user.first_name, 'user_photo.jpg')
     else:
-        await update.message.reply_text(text='嗯，好像收到了什么奇怪的东西！\n请使用文字进行提问！')
+        await update.message.reply_text(text='Хм, что-то странное! \nПожалуйста, используй текст,'
+                                             ' чтобы задавать вопросы!')
         if update.message.document:
             file = await update.message.document.get_file()
             await file.download_to_drive(
@@ -95,12 +97,12 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
                       "policy. Please modify your prompt and retry. To learn more about our content filtering " \
                       "policies please read our documentation: https://go.microsoft.com/fwlink/?linkid=2198766"
     elif type(context.error) in [openai.error.Timeout, asyncio.exceptions.TimeoutError]:
-        error_reply = "请求超时，请重新提问！"
+        error_reply = "Время запроса истекло. Повтори запрос, плиз"
 
     if error_reply:
         await update.message.reply_text(error_reply, parse_mode="Markdown", disable_web_page_preview=True)
     else:
-        await update.message.reply_text("哎呀，请求太火爆了，请休息一下，等会儿再试试吧!", parse_mode="Markdown", disable_web_page_preview=True)
+        await update.message.reply_text("Повтори чуть попозже, плиз", parse_mode="Markdown", disable_web_page_preview=True)
         await context.bot.send_message(
             chat_id=config["DEVELOPER_CHAT_ID"], text=message
         )

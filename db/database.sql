@@ -1,6 +1,6 @@
 create database ai;
 
-CREATE TABLE `users` (
+CREATE TABLE users (
   `ID` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
-CREATE TABLE `records` (
+CREATE TABLE records (
   `ID` int NOT NULL AUTO_INCREMENT,
   `user_id` bigint DEFAULT NULL,
   `role` varchar(50) NOT NULL,

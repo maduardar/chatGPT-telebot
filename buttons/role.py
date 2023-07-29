@@ -19,15 +19,11 @@ async def set_system_content(update: Update, context: ContextTypes.DEFAULT_TYPE)
     system_content = user.get(
         "system_content") if user else 'You are an AI assistant that helps people find information.'
     await update.message.reply_text(text=f"""
-您当前的系统AI助手身份设置为🤖：
+Текущие параметры ai-помощника установлены как🤖：
 
 **{system_content}**
 
-请直接回复新的AI助手身份设置！
-
-您可以参考： [🧠ChatGPT 中文调教指南]https://github.com/PlexPt/awesome-chatgpt-prompts-zh
-
-如需取消重置，请直接回复：`取消` 或 `取消重置` ‍🤝‍
+Если ты хочешь отменить эти настроки, пожалуйста, напиши: «Отмена» или «Отключиться» ‍🤝‍
     """, parse_mode='Markdown', disable_web_page_preview=True, reply_markup=cancel_markup)
     return TYPING_SYS_CONTENT
 
@@ -40,17 +36,18 @@ async def reset_context(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     user = mysql.getOne(f"select * from users where user_id={user_id}")
     mysql.end()
     await update.message.reply_text(f"""
-每次提问AI会参考您最近{context_count[user['level']]}次的对话记录为您提供答案！
+Каждый раз, когда ты задаешь вопрос, гпт будет обращаться к твои последним {context_count[user['level']]} сообщениям,
+ чтобы дать ответ!
 
-现在您的会话历史已清空，可以重新开始提问了！
+Теперь, когда ваша история разговоров очищена, пришло время снова начать задавать вопросы!
     """, parse_mode="Markdown", disable_web_page_preview=True)
     return CHOOSING
 
 
 async def set_system_content_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     system_content = update.message.text.strip()
-    if system_content in ("取消", "取消重置", "🚫取消"):
-        await update.message.reply_text(text="已取消。\n您可以继续向我提问了",
+    if system_content in ("Отмена", "Отменить", "🚫Отключиться", "🚫Отменить", "Сбросить", "Забыть"):
+        await update.message.reply_text(text="Отменено.\nМожешь продолжать задавать мне вопросы",
                                         reply_markup=reply_markup, parse_mode='Markdown')
     else:
         user_id = update.effective_user.id
@@ -60,8 +57,8 @@ async def set_system_content_handler(update: Update, context: ContextTypes.DEFAU
         mysql.update("update records set reset_at=%s where user_id=%s and reset_at is null", (reset_at, user_id))
         mysql.end()
         await update.message.reply_text(text=f"""
-新的AI助手身份已确认。
-我将以新身份为背景来为您解答问题。
-您现在可以开始提问了！
+Личность нового ИИ-помощника подтверждена.
+Я отвечу на все твои вопросы в контексте моей новой личности.
+Теперь можешь задавать вопросы!
         """, reply_markup=reply_markup, parse_mode='Markdown')
     return CHOOSING

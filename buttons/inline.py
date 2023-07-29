@@ -56,7 +56,7 @@ def get_chat_mode_menu(page_index: int):
                 InlineKeyboardButton("«", callback_data=f"show_chat_modes|{page_index - 1}"),
                 InlineKeyboardButton("»", callback_data=f"show_chat_modes|{page_index + 1}")
             ])
-    keyboard.append([InlineKeyboardButton("🚫取消切换", callback_data="cancel")])
+    keyboard.append([InlineKeyboardButton("🚫Отключиться", callback_data="cancel")])
 
     inline_reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -104,6 +104,6 @@ async def set_chat_mode_handle(update: Update, context: ContextTypes.DEFAULT_TYP
 async def cancel_chat_mode_handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         update.callback_query.message.chat.id,
-        text="已取消。\n您可以继续向我提问了",
+        text="Отменено.\nВы можете продолжать задавать мне вопросы",
         parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup
     )
