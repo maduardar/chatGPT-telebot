@@ -58,6 +58,7 @@ def main() -> None:
 
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(config["BOT"]["TOKEN"]).persistence(persistence).build()
+    print("Bot started...")
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
