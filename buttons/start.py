@@ -11,6 +11,7 @@ from db.MySqlConn import Mysql
 # Define a few command handlers. These usually take the two arguments update and
 # context.
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    print("start")
     mysql = Mysql()
     user = update.effective_user
     user_id = user.id
