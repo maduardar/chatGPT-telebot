@@ -30,7 +30,7 @@ async def ChatCompletionsAI(logged_in_user, messages) -> (str, str):
         messages=messages,
         max_tokens=token[level],
         **OPENAI_CHAT_COMPLETION_OPTIONS)
-
+    print("Connection to AI established")
     answer = ""
     async for r in response:
         delta = r.choices[0].delta
