@@ -19,6 +19,7 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 
+print(f"python-telegram-bot version: {__version_info__}")
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -57,8 +58,13 @@ def main() -> None:
     persistence = PicklePersistence(filepath='conversationbot')
 
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token(config["BOT"]["TOKEN"]).persistence(persistence).build()
-    print("Bot started...")
+    try:
+        application = Application.builder().token(config["BOT"]["TOKEN"]).persistence(persistence).build()
+        print("Bot started...")
+    except error_handler() as e:
+        print("Can not start the bot.")
+        print(e)
+
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
