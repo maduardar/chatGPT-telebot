@@ -35,12 +35,11 @@ async def reset_context(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     mysql.update("update records set reset_at=%s where user_id=%s and reset_at is null", (reset_at, user_id))
     user = mysql.getOne(f"select * from users where user_id={user_id}")
     mysql.end()
-    await update.message.reply_text(f"""
-Каждый раз, когда ты задаешь вопрос, гпт будет обращаться к твои последним {context_count[user['level']]} сообщениям,
- чтобы дать ответ!
-
-Теперь, когда ваша история разговоров очищена, пришло время снова начать задавать вопросы!
-    """, parse_mode="Markdown", disable_web_page_preview=True)
+    await update.message.reply_text(f"Каждый раз, когда ты задаешь вопрос, гпт обращается к "
+                                    f"твои последним {context_count[user['level']]} сообщениям, "
+                                    f"чтобы дать ответ. Теперь твоя история разговоров очищена,"
+                                    f" ты можешь начать задавать вопросы с чистого листа!",
+                                    parse_mode="Markdown", disable_web_page_preview=True)
     return CHOOSING
 
 

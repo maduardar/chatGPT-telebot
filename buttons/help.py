@@ -6,7 +6,6 @@ from db.MySqlConn import Mysql
 
 
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    print("Help!")
     await update.message.reply_text(f"""
 Привет! Я - бот, который поможет тебе найти ответы на твои вопросы. Ты можешь задавать мне вопросы на любую тему, и я постараюсь найти ответы на них.
 Писать вопросы ты можешь прямо в этот чат без всяких дополнительных команд. Я буду отвечать тебе в этом же чате.
